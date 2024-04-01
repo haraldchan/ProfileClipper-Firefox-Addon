@@ -1,0 +1,1 @@
+browser.tabs.executeScript({ file: '/content_scripts/content.js' })

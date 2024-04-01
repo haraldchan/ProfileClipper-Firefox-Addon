@@ -1,0 +1,30 @@
+{
+	"manifest_version": 2,
+	"name": "Profile Clipper",
+	"version": "0.0.1",
+
+	"description": "",
+	"icons": {
+		"48": "icons/CFicon-48.png"
+	},
+
+	"permissions": ["tabs", "webNavigation", "activeTab", "clipboardRead", "clipboardWrite"],
+
+	"content_scripts": [
+		{
+			"matches": ["https://api-yst.gdzwfw.gov.cn/yst_gdslgy/hotel/"],
+			"js": ["/content_scripts/content.js"]
+		}
+	],
+
+	"background": {
+		"scripts": ["background.js"],
+		"persistent": false
+	},
+
+	"browser_action": {
+		"default_icon": "icons/CFicon-48.png",
+		"default_title": "ProfileClipper",
+		"default_popup": "popup/ProfileClipper.html"
+	}
+}
