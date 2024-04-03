@@ -12,6 +12,21 @@ function getFormattedDateTime() {
     return `${year}${month}${day}${hours}${minutes}${seconds}`;
 }
 
+function cleanLocalStorage() {
+	const currentTime = new Date().getTime()
+	for (let i = 0; i < localStorage.length; i++) {
+		const key = localStorage.key(i)
+		const timestamp = parseInt(key, 10) // Parse the key as an integer
+		if (!isNaN(timestamp)) {
+			// Check if the key is a valid timestamp
+			if (currentTime - timestamp >= 24 * 60 * 60 * 1000) {
+				// Check if the timestamp is older than 24 hours
+				localStorage.removeItem(key) // Remove the item from local storage
+			}
+		}
+	}
+}
+
 const observer = new MutationObserver(async (mutationsList, observer) => {
     for (let mutation of mutationsList) {
         if (mutation.type === 'childList') {
@@ -27,21 +42,22 @@ const observer = new MutationObserver(async (mutationsList, observer) => {
 			const roomNumLabel = document.querySelector('label[for="fjh"]')
 
 			if (!submitBtn.hasAttribute('capture-event-added')) {
-				submitBtn.addEventListener("click", async () => {
+				submitBtn.addEventListener("click", () => {
 					const guestInfo = {identifier: identifier}
 
 					guestInfo.name = nameLabel.nextElementSibling.getElementsByTagName('input')[0].value
 					guestInfo.gender = genderLabel.nextElementSibling.getElementsByTagName('input')[0].value
 					guestInfo.birthday = birthdayLabel.nextElementSibling.getElementsByTagName('input')[0].value
 					guestInfo.address = addrLabel.nextElementSibling.getElementsByTagName('input')[0].value
-					guestInfo.id3Type = idTypeLabel.nextElementSibling.getElementsByTagName('input')[0].value
+					guestInfo.idType = idTypeLabel.nextElementSibling.getElementsByTagName('input')[0].value
 					guestInfo.idNum = idNumLabel.nextElementSibling.getElementsByTagName('input')[0].value
-					guestInfo.roomNum = roomNumLabel.nextElementSibling.getElementsByTagName('input')[0].value
+					guestInfo.room = roomNumLabel.nextElementSibling.getElementsByTagName('input')[0].value
 					guestInfo.loggedTime = getFormattedDateTime()
 
 					console.log(guestInfo)
 					navigator.clipboard.writeText(JSON.stringify(guestInfo))
 					localStorage.setItem((new Date()).getTime(), JSON.stringify(guestInfo))
+					// cleanLocalStorage()
 				})
 
 				document.addEventListener('keyup', e => {
