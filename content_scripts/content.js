@@ -30,8 +30,14 @@ function cleanLocalStorage() {
 const observer = new MutationObserver(async (mutationsList, observer) => {
     for (let mutation of mutationsList) {
         if (mutation.type === 'childList') {
-			const submitSpan = Array.from(document.getElementsByTagName('span'))
-			const submitBtn = submitSpan.filter(span => span.innerText === "上报(R)")[0].parentElement
+        	// when button appear means the modal is show
+			const span = Array.from(document.getElementsByTagName('span'))
+			const submitBtn = span.filter(span => span.innerText === '上报(R)')[0].parentElement
+			const guestTypes = Array.from(span.filter(span => span.innerText === '内地旅客')[0]
+								.parentElement
+								.parentElement
+								.querySelectorAll('.el-radio')
+								)
 
 			const nameLabel = document.querySelector('label[for="xm"]')
 			const genderLabel = document.querySelector('label[for="xb"]')
@@ -55,6 +61,9 @@ const observer = new MutationObserver(async (mutationsList, observer) => {
 					guestInfo.loggedTime = getFormattedDateTime()
 
 					console.log(guestInfo)
+					const currentGuestType = guestTypes.filter(radio => radio.classList.contains('is-checked'))[0].textContent
+
+					console.log(currentGuestType)
 					navigator.clipboard.writeText(JSON.stringify(guestInfo))
 					localStorage.setItem((new Date()).getTime(), JSON.stringify(guestInfo))
 					// cleanLocalStorage()
