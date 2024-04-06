@@ -1,5 +1,9 @@
-// receive message from content.js(in object req)
-// browser.runtime.onMessage.addListener((req) => {
-// 	console.log(JSON.parse(req.info))
-// 	navigator.clipboard.writeText(req.info)
-// })
+let ls
+
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.ls) {
+        ls = message.ls
+    } else if (message.requestData) {
+        sendResponse({ ls: ls })
+    }
+})
