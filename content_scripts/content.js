@@ -10,9 +10,26 @@ const fieldLabelPatterns = {
 		idNum: 'idCode',
 		roomNum: 'fjh',
 	},
-	// TODO: find out labels
-	hkMoTw: {},
-	foreign: {},
+	hkMoTw: {
+		name: 'xm',
+		gender: 'xb',
+		birthday: 'csrq',
+		addr: 'czdz',
+		idType: 'cardType',
+		idNum: 'cardId',
+		region: 'region',
+		roomNum: 'fjh',
+	},
+	foreign: {
+		nameLast: 'wwx',
+		nameFirst: 'wwm',
+		gender: 'xb',
+		birthday: 'csrq',
+		country: 'country',
+		idType: 'foreignCardType',
+		idNum: 'cardId',
+		roomNum: 'fjh',
+	},
 }
 
 function getFormattedDateTime() {
@@ -42,15 +59,26 @@ function cleanLocalStorage() {
 }
 
 function getGuestInfo(guestType) {
-	const guestInfo = { indentifier }
+	const guestInfo = { identifier, guestType }
 
-	patternToApply = 
-		guestType === '国内旅客' ? fieldLabelPatterns.mainland 
-		: guestType === '港澳台旅客' ? fieldLabelPatterns.hkMoTw 
-		: fieldLabelPatterns.foreign
+	patternToApply =
+		guestType === '内地旅客' ? fieldLabelPatterns.mainland
+			: guestType === '港澳台旅客' ? fieldLabelPatterns.hkMoTw
+				: fieldLabelPatterns.foreign
 
 	for (const [key, val] of Object.entries(patternToApply)) {
 		guestInfo[key] = document.querySelector(`label[for="${val}"]`).nextElementSibling.getElementsByTagName('input')[0].value
+	}
+
+	if (guestType === '港澳台旅客') {
+		guestInfo.nameLast = Array.from(document.querySelectorAll('.el-form-item__label'))
+			.filter(label => label.innerText === '英文姓')[0]
+			.nextElementSibling
+			.querySelector('input').value
+		guestInfo.nameFirst = Array.from(document.querySelectorAll('.el-form-item__label'))
+			.filter(label => label.innerText === '英文名')[0]
+			.nextElementSibling
+			.querySelector('input').value
 	}
 
 	return guestInfo
@@ -69,7 +97,7 @@ const observer = new MutationObserver(async (mutationsList, observer) => {
 					const currentGuestType = guestTypes.filter((radio) => radio.classList.contains('is-checked'))[0].textContent
 					console.log(currentGuestType)
 
-					const guestInfo  = getGuestInfo(currentGuestType)
+					const guestInfo = getGuestInfo(currentGuestType)
 					console.log(guestInfo)
 
 					navigator.clipboard.writeText(JSON.stringify(guestInfo))
