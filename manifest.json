@@ -7,12 +7,8 @@
 		"48": "icons/CFicon-48.png"
 	},
 	"permissions": [
-		"tabs",
-		"webNavigation",
-		"activeTab",
 		"clipboardRead",
-		"clipboardWrite",
-		"storage"
+		"clipboardWrite"
 	],
 	"content_scripts": [
 		{
