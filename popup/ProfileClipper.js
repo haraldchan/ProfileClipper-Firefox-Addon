@@ -1,6 +1,7 @@
 const clipped = document.querySelector('.clipped')
 const searchField = document.querySelector('.get-info')
 const searchRes = document.querySelector('.searchRes')
+const refreshBtn = document.querySelector('.get-info-button')
 const searchItem = document.createDocumentFragment()
 let ls
 
@@ -16,7 +17,6 @@ function addListItem(ul, guestInfo) {
 	name.innerText = guestInfo.guestType === '国外旅客'
 		? guestInfo.nameLast + ', ' + guestInfo.nameFirst
 		: guestInfo.name
-
 	room.style.padding = '0 10px 0'
 
 	li.addEventListener('dblclick', () => {
@@ -37,18 +37,17 @@ searchField.addEventListener('input', () => {
 		const timestamp = parseInt(key, 10)
 		if (!isNaN(timestamp)) {
 			guestInfo = JSON.parse(value)
-
-			console.log(guestInfo)
+			// console.log(guestInfo)
 			if (guestInfo.roomNum.includes(searchField.value)) {
 				addListItem(searchRes, guestInfo)
 			} else if (guestInfo.guestType === '国外旅客') {
-				if (guestInfo.nameLast.includes(searchField.value) ||
-					guestInfo.nameFirst.includes(searchField.value)) {
+				if (guestInfo.nameLast.toLowerCase().includes(searchField.value.toLowerCase()) ||
+					guestInfo.nameFirst.toLowerCase().includes(searchField.value.toLowerCase())) {
 					addListItem(searchRes, guestInfo)
 				}
 			} else if (guestInfo.guestType === '港澳台旅客') {
-				if (guestInfo.nameLast.includes(searchField.value) ||
-					guestInfo.nameFirst.includes(searchField.value) ||
+				if (guestInfo.nameLast.toLowerCase().includes(searchField.value.toLowerCase()) ||
+					guestInfo.nameFirst.toLowerCase().includes(searchField.value.toLowerCase()) ||
 					guestInfo.name.includes(searchField.value)) {
 					addListItem(searchRes, guestInfo)
 				}
@@ -59,6 +58,21 @@ searchField.addEventListener('input', () => {
 			}
 		}
 	}
+})
+
+refreshBtn.addEventListener('click', () => {
+	searchRes.innerText = ''
+	browser.runtime.sendMessage({ requestData: true }, response => {
+		ls = response.ls
+		for (const [key, value] of Object.entries(ls)) {
+			const timestamp = parseInt(key, 10)
+			if (!isNaN(timestamp)) {
+				guestInfo = JSON.parse(value)
+
+				addListItem(searchRes, guestInfo)
+			}
+		}
+	})
 })
 
 browser.tabs.executeScript({ file: '/content_scripts/content.js' })

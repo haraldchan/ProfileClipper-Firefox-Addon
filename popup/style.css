@@ -50,6 +50,16 @@ body {
   border: 0;
 }
 
+.get-info-button {
+  margin: 15px 0 25px 0;
+  padding-left: 10px;
+  width: 80px;
+  height: 30px;
+  border-radius: 3px;
+  border: 0;
+  letter-spacing: 10px;
+}
+
 .searchRes {
   /* border: #1C94DE 1px solid; */
   width: 340px;
