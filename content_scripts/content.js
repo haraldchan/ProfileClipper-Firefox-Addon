@@ -68,6 +68,10 @@ function getGuestInfo(guestType) {
 			.querySelector('input').value
 	}
 
+	if (guestType === '国外旅客') {
+		guestInfo.addr = " "
+	}
+
 	return guestInfo
 }
 
