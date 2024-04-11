@@ -10,7 +10,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // setting behavior
 // Define an array of supported URLs
-const supportedUrls = ['https://example.com', 'https://anotherexample.com']
+const hotelUrl = 'https://api-yst.gdzwfw.gov.cn/yst_gdslgy/hotel/'
 
 // Keep track of the current tab's URL and whether it is supported
 let currentTabUrl = ''
@@ -33,7 +33,7 @@ function updateIcon() {
 browser.runtime.onMessage.addListener((message) => {
 	if (message.type === 'checkUrl') {
 		currentTabUrl = message.url
-		isCurrentTabSupported = supportedUrls.includes(currentTabUrl)
+		isCurrentTabSupported = currentTabUrl.includes(hotelUrl)
 		updateIcon()
 	}
 })
@@ -44,7 +44,7 @@ browser.tabs.onActivated.addListener((activeInfo) => {
 	browser.tabs.get(activeInfo.tabId, (tab) => {
 		if (tab && tab.url) {
 			currentTabUrl = tab.url
-			isCurrentTabSupported = supportedUrls.includes(currentTabUrl)
+			isCurrentTabSupported = currentTabUrl.includes(hotelUrl)
 			updateIcon()
 		}
 	})
