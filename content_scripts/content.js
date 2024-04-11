@@ -112,3 +112,6 @@ const observer = new MutationObserver(async (mutationsList, observer) => {
 })
 
 observer.observe(body, { childList: true })
+
+const url = window.location.href;
+browser.runtime.sendMessage({ type: 'checkUrl', url: url });
