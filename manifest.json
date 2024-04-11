@@ -1,12 +1,13 @@
 {
 	"manifest_version": 2,
 	"name": "Profile Clipper",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"description": "",
 	"icons": {
 		"48": "icons/CFicon-48.png"
 	},
 	"permissions": [
+		"tabs",
 		"clipboardRead",
 		"clipboardWrite"
 	],
