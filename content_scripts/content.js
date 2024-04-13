@@ -14,7 +14,6 @@ const fieldLabelPatterns = {
 		name: 'xm',
 		gender: 'xb',
 		birthday: 'csrq',
-		addr: 'czdz',
 		idType: 'cardType',
 		idNum: 'cardId',
 		region: 'region',
@@ -68,44 +67,62 @@ function getGuestInfo(guestType) {
 			.querySelector('input').value
 	}
 
-	if (guestType === '国外旅客') {
+	if (guestType === '国外旅客' || guestType === '港澳台旅客') {
 		guestInfo.addr = " "
 	}
 
 	return guestInfo
 }
 
+function addSaveGuestInfo(guestTypes, button, shortcutKey) {
+	if (!button.hasAttribute('capture-event-added')) {
+		button.addEventListener('click', () => {
+			console.log("clicked")
+			const currentGuestType = guestTypes.filter((radio) => radio.classList.contains('is-checked'))[0].textContent
+			const guestInfo = getGuestInfo(currentGuestType)
+			
+			for (const [key, val] of Object.entries(guestInfo)) {
+				if (key === 'roomNum') {
+					guestInfo.roomNum = val === '' ? 'null ' : val
+					continue
+				}
+				if (val === '' || val.includes("*")) {
+					return
+				}
+			}
+	
+			console.log(guestInfo)
+			navigator.clipboard.writeText(JSON.stringify(guestInfo))
+			localStorage.setItem(new Date().getTime(), JSON.stringify(guestInfo))
+			cleanLocalStorage()
+		})
+
+		// binding shortcut keys
+		document.addEventListener('keyup', (e) => {
+			if (e.ctrlKey && e.key === shortcutKey) {
+				button.click()
+			}
+		})
+
+		button.setAttribute('capture-event-added', 'true')
+	} 
+}
+
 const observer = new MutationObserver(async (mutationsList, observer) => {
-	const newGuestModal = document.querySelector('.el-dialog__wrapper')
+	const newGuestModal = document.querySelector('div[aria-label="新增旅客"]').parentElement
 	const modalStatus = window.getComputedStyle(newGuestModal).getPropertyValue('display')
 
 	for (let mutation of mutationsList) {
-		if (mutation.type === 'childList' && modalStatus !== 'none') {
+		if (mutation.type === 'childList') {
 			const span = Array.from(document.getElementsByTagName('span'))
 			const submitBtn = span.filter((span) => span.innerText === '上报(R)')[0].parentElement
+			const saveBtn = span.filter((span) => span.innerText === '保存(S)')[0].parentElement
 			const guestTypes = Array.from(span.filter((span) => span.innerText === '内地旅客')[0].parentElement.parentElement.querySelectorAll('.el-radio'))
+			const saveIsAvailable = span.filter((span) => span.innerText === '团体')[0].parentElement.classList.contains('is-checked')
 
-			if (!submitBtn.hasAttribute('capture-event-added')) {
-				submitBtn.addEventListener('click', () => {
-					const currentGuestType = guestTypes.filter((radio) => radio.classList.contains('is-checked'))[0].textContent
-					const guestInfo = getGuestInfo(currentGuestType)
-
-					Object.values(guestInfo).forEach(val => {
-						if (val === "") return
-					})
-
-					console.log(guestInfo)
-					navigator.clipboard.writeText(JSON.stringify(guestInfo))
-					localStorage.setItem(new Date().getTime(), JSON.stringify(guestInfo))
-					cleanLocalStorage()
-				})
-
-				document.addEventListener('keyup', (e) => {
-					if (e.ctrlKey && e.key === 'r') {
-						submitBtn.click()
-					}
-				})
-				submitBtn.setAttribute('capture-event-added', 'true')
+			addSaveGuestInfo(guestTypes, submitBtn, 'r')
+			if (saveIsAvailable) {
+				addSaveGuestInfo(guestTypes, saveBtn, 's')
 			}
 		}
 	}
