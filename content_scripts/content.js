@@ -77,7 +77,7 @@ function getGuestInfo(guestType) {
 function addSaveGuestInfo(guestTypes, button, shortcutKey) {
 	if (!button.hasAttribute('capture-event-added')) {
 		button.addEventListener('click', () => {
-			console.log("clicked")
+			console.log("clicked") 
 			const currentGuestType = guestTypes.filter((radio) => radio.classList.contains('is-checked'))[0].textContent
 			const guestInfo = getGuestInfo(currentGuestType)
 			
@@ -108,21 +108,38 @@ function addSaveGuestInfo(guestTypes, button, shortcutKey) {
 	} 
 }
 
+function addRadioListener(groupRadio, guestTypes) {
+	if (!groupRadio.hasAttribute('capture-event-added')) {
+		groupRadio.addEventListener('click', (e) => {
+			setTimeout(() => {
+				const spans = Array.from(document.getElementsByTagName('span'))
+				const saveBtn = spans.filter((span) => span.innerText === ('保存(S)'))[0].parentElement
+				addSaveGuestInfo(guestTypes, saveBtn, 's')	
+			}, 500);
+		})
+		groupRadio.setAttribute('capture-event-added', 'true')
+	} 
+}
+
 const observer = new MutationObserver(async (mutationsList, observer) => {
 	const newGuestModal = document.querySelector('div[aria-label="新增旅客"]').parentElement
 	const modalStatus = window.getComputedStyle(newGuestModal).getPropertyValue('display')
 
 	for (let mutation of mutationsList) {
 		if (mutation.type === 'childList') {
-			const span = Array.from(document.getElementsByTagName('span'))
-			const saveIsAvailable = span.filter((span) => span.innerText === '团体')[0].parentElement.classList.contains('is-checked')
-			const submitBtn = span.filter((span) => span.innerText === '上报(R)')[0].parentElement
-			const guestTypes = Array.from(span.filter((span) => span.innerText === '内地旅客')[0].parentElement.parentElement.querySelectorAll('.el-radio'))
+			const spans = Array.from(document.getElementsByTagName('span'))
+			const groupRadio = spans.filter((span) => span.innerText === '团体')[0].parentElement
+			const submitBtn = spans.filter((span) => span.innerText === '上报(R)')[0].parentElement
+			const guestTypes = Array.from(spans.filter((span) => span.innerText === '内地旅客')[0].parentElement.parentElement.querySelectorAll('.el-radio'))
+			const saveIsVisible = spans.filter((span) => span.innerText === '团体')[0].parentElement.classList.contains('is-checked')
 
 			addSaveGuestInfo(guestTypes, submitBtn, 'r')
-			if (saveIsAvailable) {
-				const saveBtn = span.filter((span) => span.innerText === '保存(S)')[0].parentElement
-				addSaveGuestInfo(guestTypes, saveBtn, 's')
+
+			try {
+				const saveBtn = spans.filter((span) => span.innerText === '保存(S)')[0].parentElement
+				addSaveGuestInfo(guestTypes, saveBtn, 's')	
+			} catch {
+				addRadioListener(groupRadio, guestTypes)
 			}
 		}
 	}
@@ -130,5 +147,5 @@ const observer = new MutationObserver(async (mutationsList, observer) => {
 
 observer.observe(body, { childList: true })
 
-const url = window.location.href;
-browser.runtime.sendMessage({ type: 'checkUrl', url: url });
+const url = window.location.href
+browser.runtime.sendMessage({ type: 'checkUrl', url: url })
