@@ -115,13 +115,13 @@ const observer = new MutationObserver(async (mutationsList, observer) => {
 	for (let mutation of mutationsList) {
 		if (mutation.type === 'childList') {
 			const span = Array.from(document.getElementsByTagName('span'))
-			const submitBtn = span.filter((span) => span.innerText === '上报(R)')[0].parentElement
-			const saveBtn = span.filter((span) => span.innerText === '保存(S)')[0].parentElement
-			const guestTypes = Array.from(span.filter((span) => span.innerText === '内地旅客')[0].parentElement.parentElement.querySelectorAll('.el-radio'))
 			const saveIsAvailable = span.filter((span) => span.innerText === '团体')[0].parentElement.classList.contains('is-checked')
+			const submitBtn = span.filter((span) => span.innerText === '上报(R)')[0].parentElement
+			const guestTypes = Array.from(span.filter((span) => span.innerText === '内地旅客')[0].parentElement.parentElement.querySelectorAll('.el-radio'))
 
 			addSaveGuestInfo(guestTypes, submitBtn, 'r')
 			if (saveIsAvailable) {
+				const saveBtn = span.filter((span) => span.innerText === '保存(S)')[0].parentElement
 				addSaveGuestInfo(guestTypes, saveBtn, 's')
 			}
 		}
