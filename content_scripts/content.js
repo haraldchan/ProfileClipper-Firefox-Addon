@@ -71,6 +71,10 @@ function getGuestInfo(guestType) {
 		guestInfo.addr = " "
 	}
 
+	if (guestType === '国外旅客') {
+		guestInfo.name = guestInfo.nameLast + ', ' + guestInfo.nameFirst
+	}
+
 	return guestInfo
 }
 
